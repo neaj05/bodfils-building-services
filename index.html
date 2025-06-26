@@ -185,23 +185,7 @@
         .gallery-controls {
             text-align: center;
             margin-bottom: 3rem;
-        }
-
-        .upload-btn {
-            background: #1e3c72;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            margin-right: 1rem;
-        }
-
-        .upload-btn:hover {
-            background: #2a5298;
-            transform: translateY(-2px);
+            display: none;
         }
 
         .gallery-grid {
@@ -258,6 +242,75 @@
 
         .gallery-item:hover .delete-btn {
             display: block;
+        }
+
+        /* Partners Section */
+        .partners {
+            padding: 100px 0;
+            background: #f8f9fa;
+        }
+
+        .partner-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .partner-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border-color: #ffd700;
+        }
+
+        .partner-logo {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1e3c72;
+        }
+
+        .partner-card h3 {
+            font-size: 2rem;
+            color: #1e3c72;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .partner-card p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .pdf-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .pdf-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .pdf-icon {
+            font-size: 1.3rem;
         }
 
         /* Contact Section */
@@ -436,6 +489,7 @@
                         <li><a href="#accueil">Accueil</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#galerie">Galerie</a></li>
+                        <li><a href="#partenaires">Partenaires</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </nav>
@@ -482,17 +536,24 @@
     <section id="galerie" class="gallery">
         <div class="container">
             <h2 class="section-title">Galerie Photos</h2>
-            <div class="gallery-controls">
-                <button class="upload-btn" onclick="document.getElementById('imageUpload').click()">
-                    📸 Ajouter des Photos
-                </button>
-                <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
-                <button class="upload-btn" onclick="clearGallery()">🗑️ Vider la Galerie</button>
-            </div>
             <div class="gallery-grid" id="galleryGrid">
-                <div class="gallery-item">
-                    <div class="gallery-placeholder">Ajoutez vos photos de projets ici</div>
-                </div>
+                <!-- Photos will be loaded automatically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section id="partenaires" class="partners">
+        <div class="container">
+            <h2 class="section-title">Nos Partenaires</h2>
+            <div class="partner-card">
+                <div class="partner-logo">🏛️</div>
+                <h3>ENDURE ARCHITECTS</h3>
+                <p>Notre partenaire de confiance spécialisé dans la conception architecturale et l'ingénierie. ENDURE ARCHITECTS apporte son expertise technique et créative à tous nos projets de construction pour garantir des réalisations d'exception.</p>
+                <a href="ENDURE ARCHITECTS - COMPANY PROFILE.pdf" class="pdf-download" target="_blank" rel="noopener noreferrer">
+                    <span class="pdf-icon">📄</span>
+                    Télécharger le Profil d'Entreprise
+                </a>
             </div>
         </div>
     </section>
@@ -590,70 +651,66 @@
             });
         });
 
-        // Gallery functionality
-        let galleryImages = [];
-        
-        document.getElementById('imageUpload').addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        addImageToGallery(e.target.result, file.name);
-                    };
-                    reader.readAsDataURL(file);
-                }
+        // Gallery functionality - Load images from galerie folder
+        const galleryImages = [
+            'galerie/photo1.jpg',
+            'galerie/photo2.jpg',
+            'galerie/photo3.jpg',
+            'galerie/photo4.jpg',
+            'galerie/photo5.jpg',
+            'galerie/photo6.jpg',
+            'galerie/photo7.jpg',
+            'galerie/photo8.jpg',
+            'galerie/photo9.jpg',
+            'galerie/photo10.jpg'
+        ];
+
+        function loadGalleryImages() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            galleryGrid.innerHTML = ''; // Clear existing content
+            
+            let imagesLoaded = 0;
+            
+            galleryImages.forEach((imagePath, index) => {
+                const img = new Image();
+                img.onload = function() {
+                    addImageToGallery(imagePath, `Photo ${index + 1}`);
+                    imagesLoaded++;
+                };
+                img.onerror = function() {
+                    // Image doesn't exist, skip it
+                    console.log(`Image ${imagePath} not found`);
+                };
+                img.src = imagePath;
             });
-        });
+            
+            // Show placeholder if no images found after attempting to load
+            setTimeout(() => {
+                if (galleryGrid.children.length === 0) {
+                    const placeholderItem = document.createElement('div');
+                    placeholderItem.className = 'gallery-item';
+                    placeholderItem.innerHTML = '<div class="gallery-placeholder">Aucune photo disponible. Ajoutez vos photos dans le dossier "galerie".</div>';
+                    galleryGrid.appendChild(placeholderItem);
+                }
+            }, 2000);
+        }
 
         function addImageToGallery(src, name) {
             const galleryGrid = document.getElementById('galleryGrid');
             
-            // Remove placeholder if it exists
-            const placeholder = galleryGrid.querySelector('.gallery-placeholder');
-            if (placeholder) {
-                placeholder.parentElement.remove();
-            }
-
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
             galleryItem.innerHTML = `
-                <img src="${src}" alt="${name}" onclick="openModal('${src}')">
-                <button class="delete-btn" onclick="deleteImage(this)" title="Supprimer">&times;</button>
+                <img src="${src}" alt="${name}" onclick="openModal('${src}')" loading="lazy">
             `;
             
             galleryGrid.appendChild(galleryItem);
-            galleryImages.push({src, name});
         }
 
-        function deleteImage(btn) {
-            const galleryItem = btn.parentElement;
-            const img = galleryItem.querySelector('img');
-            const src = img.src;
-            
-            // Remove from array
-            galleryImages = galleryImages.filter(item => item.src !== src);
-            
-            // Remove from DOM
-            galleryItem.remove();
-            
-            // Add placeholder if no images left
-            const galleryGrid = document.getElementById('galleryGrid');
-            if (galleryGrid.children.length === 0) {
-                const placeholderItem = document.createElement('div');
-                placeholderItem.className = 'gallery-item';
-                placeholderItem.innerHTML = '<div class="gallery-placeholder">Ajoutez vos photos de projets ici</div>';
-                galleryGrid.appendChild(placeholderItem);
-            }
-        }
-
-        function clearGallery() {
-            if (confirm('Êtes-vous sûr de vouloir supprimer toutes les photos ?')) {
-                galleryImages = [];
-                const galleryGrid = document.getElementById('galleryGrid');
-                galleryGrid.innerHTML = '<div class="gallery-item"><div class="gallery-placeholder">Ajoutez vos photos de projets ici</div></div>';
-            }
-        }
+        // Load gallery images when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGalleryImages();
+        });
 
         // Modal functionality
         function openModal(src) {
